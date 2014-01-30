@@ -77,9 +77,10 @@ def closed_loop( c, p, tm=5000 ):
     returns: tuple of sequences (times, targets, errors)
     """
     def setpoint( t ):
-        if t < 100: return 0
-        if t < 300: return 50
-        return 10
+        # if t < 100: return 0
+        # if t < 300: return 50
+        # return 10
+        return t * 0.25
     
     y = 0
     res = []
