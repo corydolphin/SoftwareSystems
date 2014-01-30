@@ -45,14 +45,16 @@ class Buffer:
         return self.queued
 
 class Controller:
-    def __init__( self, kp, ki ):
+    def __init__( self, kp, ki, kd ):
         """Initializes the controller.
 
         kp: proportional gain
         ki: integral gain
+        kd: derivative gain
         """
-        self.kp, self.ki = kp, ki
+        self.kp, self.ki, self.kd = kp, ki, kd
         self.i = 0       # Cumulative error ("integral")
+        self.prev = 0       # Previous error, "derivative"
 
     def work( self, e ):
         """Computes the number of jobs to be added to the ready queue.
@@ -62,8 +64,10 @@ class Controller:
         returns: float number of jobs
         """
         self.i += e
+        de =  e - self.prev
+        self.prev = e
 
-        return self.kp*e + self.ki*self.i
+        return self.kp*e + self.ki*self.i + self.kd*de
 
 # ============================================================
 
@@ -97,7 +101,7 @@ def closed_loop( c, p, tm=5000 ):
 
 # ============================================================
 
-c = Controller( 1.25, 0.01)
+c = Controller( 1.25, 0.01, 0.01)
 p = Buffer( 50, 10 )
 
 # run the simulation
