@@ -12,12 +12,13 @@ License: GNU GPLv3
 
 int *foo() {
     int i;
-    int array[SIZE];
+    // int array[SIZE];
+    int *array = malloc(sizeof(int) * SIZE);
 
     printf("%p\n", array);
 
     for (i=0; i<SIZE; i++) {
-	array[i] = 17;
+	   array[i] = 17;
     }
     return array;
 }
@@ -29,7 +30,7 @@ void bar() {
     printf("%p\n", array);
 
     for (i=0; i<SIZE; i++) {
-	array[i] = i;
+	   array[i] = i;
     }
 }
 
@@ -40,7 +41,7 @@ int main()
     bar();
 
     for (i=0; i<SIZE; i++) {
-	printf("%d\n", array[i]);
+    	printf("%d\n", array[i]);
     }
 
     return 0;
