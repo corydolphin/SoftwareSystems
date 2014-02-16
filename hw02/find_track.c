@@ -34,31 +34,6 @@ void find_track(char search_for[])
     }
 }
 
-//
-// Helper function to handle cases of regex matches
-//
-// inputs: pointer to compiled regex
-// returns 1 if match, 0 if no match, and -1 if error
-// In the case of an error, the error is printed.
-//
-int doesMatch(regex_t *re, char *string){
-    int no_match;
-    char msgbuf[100];
-    no_match = regexec(re, string, 0, NULL, 0);
-
-    if( !no_match ){ // zero is success.
-        return 1;
-    }
-    else if( no_match == REG_NOMATCH ){
-        return 0;
-    }
-    else{
-        regerror(no_match, re, msgbuf, sizeof(msgbuf));
-        fprintf(stderr, "Regex match failed: %s\n", msgbuf);
-        return -1;
-    }
-}
-
 
 // Finds all tracks that match the given pattern.
 //
@@ -67,20 +42,35 @@ int doesMatch(regex_t *re, char *string){
 void find_track_regex(char pattern[])
 {
     regex_t    re;
-    int no_match;
+    char msgbuf[100];
+    int no_match, rce;
 
-    if (regcomp(&re, pattern, REG_EXTENDED) != 0) {
-        printf("Error");      /* report error */
+    rce = regcomp(&re, pattern, REG_EXTENDED);
+    if (rce) {
+        regerror(rce, NULL, msgbuf, sizeof(msgbuf));
+
+        printf("Error encountered compiling regular expression. Original error message: \"%s\"\n", msgbuf);
+        exit(1);
     }
 
     for(int i = 0; i < NUM_TRACKS; i++){
-        if(doesMatch(&re, tracks[i])){
+        
+        rce = regexec(&re, tracks[i], 0, NULL, 0);
+        if(!rce){
             printf("Track %i: '%s'\n", i, tracks[i]);
+        }
+        else if(rce == REG_NOMATCH){
+            continue;
+        }
+        else{
+            regerror(no_match, &re, msgbuf, sizeof(msgbuf));
+            fprintf(stderr, "Regex match failed: %s\n", msgbuf);
+            exit(1);
         }
     }
 
-    //Free the regex!
-    regfree(&re);
+
+    regfree(&re);     //Free the regex!
 }
 
 // Truncates the string at the first newline, if there is one.
