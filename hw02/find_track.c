@@ -48,13 +48,11 @@ void find_track_regex(char pattern[])
     rce = regcomp(&re, pattern, REG_EXTENDED);
     if (rce) {
         regerror(rce, NULL, msgbuf, sizeof(msgbuf));
-
         printf("Error encountered compiling regular expression. Original error message: \"%s\"\n", msgbuf);
         exit(1);
     }
 
     for(int i = 0; i < NUM_TRACKS; i++){
-        
         rce = regexec(&re, tracks[i], 0, NULL, 0);
         if(!rce){
             printf("Track %i: '%s'\n", i, tracks[i]);
