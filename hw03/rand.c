@@ -86,22 +86,30 @@ float my_random_float2()
   return b.f;
 }
 
+//generate a random 64bit uint by combining two
+// random 32bit numbers
+uint64_t random64(){
+  return ((uint64_t)random()<<32 )| random();
+}
+
+
 // compute a random double using my algorithm
 double my_random_double()
 {
-  long x;
+  uint64_t x;
   long mant;
   long exp = 1022; // Offset
   long mask = 1;
 
   union {
     double f;
-    long i;
+    uint64_t i;
   } b;
 
   // generate random bits until we see the first set bit
   while (1) {
-    x = random();
+    x = random64();
+
     if (x == 0) {
       exp -= 63;
     } else {

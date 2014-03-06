@@ -18,7 +18,7 @@ with open('random.txt','rb') as infile:
 print len(set(x))
 
 # the histogram of the data with histtype='step'
-n, bins, patches = P.hist(x, 1000, normed=1, histtype='stepfilled')
+n, bins, patches = P.hist(x, 10000, histtype='stepfilled')
 P.setp(patches, 'facecolor', 'g', 'alpha', 0.75)
 
 # add a line showing the expected distribution
