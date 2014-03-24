@@ -36,12 +36,8 @@ void setup() {
 }
 
 void writeByte(int x) {
-  int pin;
-  
-  for (pin=13; pin>=6; pin--) {
-    digitalWrite(pin, x&1);
-    x >>= 1;
-  }
+  PORTB = x >> 2; // write top six bits of x to 13,12,11,10,9,8
+  PORTD = x << 6; // write lowest two bits of x to 7, 6
 }
 
 int low = 36;
