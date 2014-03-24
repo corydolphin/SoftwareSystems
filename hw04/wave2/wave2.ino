@@ -35,13 +35,13 @@ void setup() {
   pinMode(6, OUTPUT);  
 }
 
-void writeByte(int x) {
-  PORTB = x >> 2; // write top six bits of x to 13,12,11,10,9,8
-  PORTD = x << 6; // write lowest two bits of x to 7, 6
+void writeByte(byte x) {
+PORTB = x >> 2; // write top six bits of x to 13,12,11,10,9,8
+PORTD = x << 6; // write lowest two bits of x to 7, 6
 }
 
-int low = 36;
-int high = 255;
+byte low = 36;
+byte high = 255;
 int stride = 5;
 int counter = low;
 
