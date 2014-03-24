@@ -130,27 +130,31 @@ int hash_hashable(Hashable *hashable)
 }
 
 
-/* Compares integers. */
+/* Checks two integers for equality
+    Returns 1 if equal, 0 otherwise
+*/
 int equal_int (void *ip, void *jp)
 {
-    // FIX ME!
-    return 0;
+    return *(int*)ip == *(int*)jp;
 }
 
 
-/* Compares strings. */
+/* Checks two strings for equality
+    Returns 1 if equal, 0 otherwise
+*/
 int equal_string (void *s1, void *s2)
 {
-    // FIX ME!
-    return 0;
+    return strcmp(s1,s2) ==0;
 }
 
 
-/* Compares Hashables. */
+/* Checks two Hashables for equality
+    Returns 1 if equal, 0 otherwise
+    Two hashables are equal if both their key and value are equivalent
+*/
 int equal_hashable(Hashable *h1, Hashable *h2)
 {
-    // FIX ME!
-    return 0;
+    return hash_hashable(h1) == hash_hashable(h2) && h1->equal(h2,h2);
 }
 
 
@@ -189,8 +193,11 @@ typedef struct node {
 /* Makes a Node. */
 Node *make_node(Hashable *key, Value *value, Node *next)
 {
-    // FIX ME!
-    return NULL;
+    Node *result = (Node*)malloc(sizeof(Node));
+    result->key = key;
+    result->value = value;
+    result->next = next;
+    return result;
 }
 
 
@@ -198,7 +205,9 @@ Node *make_node(Hashable *key, Value *value, Node *next)
 void print_node(Node *node)
 {
     print_hashable(node->key);
-    printf ("value %p\n", node->value);
+    printf("value ");
+    print_value(node->value);
+    printf("\n");   
     printf ("next %p\n", node->next);
 }
 
@@ -206,7 +215,11 @@ void print_node(Node *node)
 /* Prints all the Nodes in a list. */
 void print_list(Node *node)
 {
-    // FIX ME!
+    Node* current = node;
+    while(current){
+        print_node(current);
+        current = current->next;
+    } 
 }
 
 
@@ -223,7 +236,14 @@ Node *prepend(Hashable *key, Value *value, Node *rest)
 /* Looks up a key and returns the corresponding value, or NULL */
 Value *list_lookup(Node *list, Hashable *key)
 {
-    // FIX ME!
+    Node* current = list; // Initialized to the start of the list
+    while(current){
+        if(equal_hashable(current->key,key)){
+            return current->value;
+        }
+        current = current->next;
+    } 
+
     return NULL;
 }
 
@@ -240,7 +260,13 @@ typedef struct map {
 Map *make_map(int n)
 {
     // FIX ME!
-    return NULL;
+    Map* result = (Map *)malloc(sizeof(Map));
+    result->lists = (Node **)malloc(n*sizeof(Node));
+    for(int i=0; i < n;i++){
+        result->lists[i] = NULL; // Ensure all point to null
+    }
+    result->n = n;
+    return result;
 }
 
 
@@ -258,18 +284,23 @@ void print_map(Map *map)
 }
 
 
+int get_list_index(Map* map, Hashable* key){
+    return hash_hashable(key) % (map->n);
+}
+
 /* Adds a key-value pair to a map. */
 void map_add(Map *map, Hashable *key, Value *value)
 {
-    // FIX ME!
+    int list_index = get_list_index(map,key);
+    Node* front = map->lists[list_index];
+    Node* newFront = prepend(key,value,front);
+    map->lists[list_index] = newFront;
 }
-
 
 /* Looks up a key and returns the corresponding value, or NULL. */
 Value *map_lookup(Map *map, Hashable *key)
 {
-    // FIX ME!
-    return NULL;
+    return list_lookup(map->lists[get_list_index(map,key)],key);
 }
 
 
@@ -281,49 +312,3 @@ void print_lookup(Value *value)
     printf ("\n");
 }
 
-
-int main ()
-{
-    Hashable *hashable1 = make_hashable_int (1);
-    Hashable *hashable2 = make_hashable_string ("Allen");
-    Hashable *hashable3 = make_hashable_int (2);
-
-    // make a list by hand
-    Value *value1 = make_int_value (17);
-    Node *node1 = make_node(hashable1, value1, NULL);
-    print_node (node1);
-
-    Value *value2 = make_string_value ("Downey");
-    Node *list = prepend(hashable2, value2, node1);
-    print_list (list);
-
-    // run some test lookups
-    Value *value = list_lookup (list, hashable1);
-    print_lookup(value);
-
-    value = list_lookup (list, hashable2);
-    print_lookup(value);
-
-    value = list_lookup (list, hashable3);
-    print_lookup(value);
-
-    // make a map
-    Map *map = make_map(10);
-    map_add(map, hashable1, value1);
-    map_add(map, hashable2, value2);
-
-    printf ("Map\n");
-    print_map(map);
-
-    // run some test lookups
-    value = map_lookup(map, hashable1);
-    print_lookup(value);
-
-    value = map_lookup(map, hashable2);
-    print_lookup(value);
-
-    value = map_lookup(map, hashable3);
-    print_lookup(value);
-
-    return 0;
-}
