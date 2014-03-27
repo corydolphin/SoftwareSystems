@@ -16,6 +16,14 @@
 int ledPin = 5;       // select the pin for the LED
 int buttonPin1 = 2;
 int buttonPin2 = 3;
+byte low = 36;
+byte high = 255;
+int stride = 5;
+int counter = low;
+boolean toggle0 = 0;
+boolean toggle1 = 0;
+boolean toggle2 = 0;
+
 
 const byte BitReverseTable256[] = 
 {
@@ -40,6 +48,21 @@ const byte BitReverseTable256[] =
 
 
 
+ISR(TIMER0_COMPA_vect){//timer0 interrupt 2kHz toggles pin 8
+//generates pulse wave of frequency 2kHz/2 = 1kHz (takes two cycles for full wave- toggle high then toggle low)
+  if (toggle0){
+    digitalWrite(8,HIGH);
+    digitalWrite(ledPin,HIGH);
+    toggle0 = 0;
+    Serial.print("test");
+    Serial.print(", ");
+  }
+  else{
+    digitalWrite(8,LOW);
+    toggle0 = 1;
+  }
+}
+
 byte reverse(byte x){
   return BitReverseTable256[x];
 }
@@ -49,9 +72,7 @@ void setup() {
   
   pinMode(buttonPin1, INPUT_PULLUP);  
   pinMode(buttonPin2, INPUT_PULLUP);  
-
-  pinMode(ledPin, OUTPUT);
-  
+  pinMode(ledPin, OUTPUT);  
   pinMode(13, OUTPUT);  
   pinMode(12, OUTPUT);  
   pinMode(11, OUTPUT);  
@@ -60,12 +81,50 @@ void setup() {
   pinMode(8, OUTPUT);  
   pinMode(7, OUTPUT);  
   pinMode(6, OUTPUT);  
+
+
+  cli();//stop interrupts
+  //set timer0 interrupt at 2kHz
+  TCCR0A = 0;// set entire TCCR2A register to 0
+  TCCR0B = 0;// same for TCCR2B
+  TCNT0  = 0;//initialize counter value to 0
+  // set compare match register for 2khz increments
+  OCR0A = 124;// = (16*10^6) / (2000*64) - 1 (must be <256)
+  // turn on CTC mode
+  TCCR0A |= (1 << WGM01);
+  // Set CS01 and CS00 bits for 64 prescaler
+  TCCR0B |= (1 << CS01) | (1 << CS00);   
+  // enable timer compare interrupt
+  TIMSK0 |= (1 << OCIE0A);
+
+  //set timer1 interrupt at 1Hz
+  TCCR1A = 0;// set entire TCCR1A register to 0
+  TCCR1B = 0;// same for TCCR1B
+  TCNT1  = 0;//initialize counter value to 0
+  // set compare match register for 1hz increments
+  OCR1A = 15624;// = (16*10^6) / (1*1024) - 1 (must be <65536)
+  // turn on CTC mode
+  TCCR1B |= (1 << WGM12);
+  // Set CS12 and CS10 bits for 1024 prescaler
+  TCCR1B |= (1 << CS12) | (1 << CS10);  
+  // enable timer compare interrupt
+  TIMSK1 |= (1 << OCIE1A);
+
+  //set timer2 interrupt at 8kHz
+  TCCR2A = 0;// set entire TCCR2A register to 0
+  TCCR2B = 0;// same for TCCR2B
+  TCNT2  = 0;//initialize counter value to 0
+  // set compare match register for 8khz increments
+  OCR2A = 249;// = (16*10^6) / (8000*8) - 1 (must be <256)
+  // turn on CTC mode
+  TCCR2A |= (1 << WGM21);
+  // Set CS21 bit for 8 prescaler
+  TCCR2B |= (1 << CS21);   
+  // enable timer compare interrupt
+  TIMSK2 |= (1 << OCIE2A);
+
+  sei();//allow interrupts
 }
-
-
-
-
-
 
 
 void writeByte(byte x) {
@@ -74,20 +133,9 @@ void writeByte(byte x) {
   PORTD = x << 6; // write lowest two bits of x to 7, 6
 }
 
-byte low = 36;
-byte high = 255;
-int stride = 5;
-int counter = low;
 
 void loop() {
-  int button1 = digitalRead(buttonPin1);
-  if (button1) return;
+//  int button1 = digitalRead(buttonPin1);
+//  if (button1) return;
   
-  counter += stride;
-  if (counter > high) {
-    counter = low;
-  }
-
-  // write to the digital pins  
-  writeByte(counter);
 }

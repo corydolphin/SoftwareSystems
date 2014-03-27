@@ -108,6 +108,27 @@ void reverse(Node **head) {
 // Returns 0 if successful, -1 if the index is out of range.
 int insert_by_index(Node **head, int val, int index) {
     // FILL THIS IN
+
+    //zero'th index case is just a push.
+    if(index ==0 ){
+        push(head,val);
+        return 0;
+    }
+
+    int count = 1;
+    Node *previous = *head;
+    Node *front = previous->next;
+
+    while(front != NULL && count <= index){
+        if(count==index){
+            Node* new_node = make_node(val, front);
+            previous->next = new_node;
+            return 0;
+        }
+        previous = front; //keep our 'trailing' ptr
+        front = front->next; //advance to the next node
+        count++; //increment count.
+    }
     return -1;
 }
 
@@ -143,11 +164,11 @@ int main() {
     printf("test_list\n");
     print_list(test_list);
 
-    // make an empty list
-    printf("empty\n");
-    Node *empty = NULL;
+    // // make an empty list
+    // printf("empty\n");
+    // Node *empty = NULL;
 
-    // add an element to the empty list
-    insert_by_index(&empty, 1, 0);
-    print_list(empty);
+    // // add an element to the empty list
+    // insert_by_index(&empty, 1, 0);
+    // print_list(empty);
 }
