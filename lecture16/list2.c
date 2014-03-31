@@ -164,11 +164,11 @@ int main() {
     printf("test_list\n");
     print_list(test_list);
 
-    // // make an empty list
-    // printf("empty\n");
-    // Node *empty = NULL;
+    // make an empty list
+    printf("empty\n");
+    Node *empty = NULL;
 
-    // // add an element to the empty list
-    // insert_by_index(&empty, 1, 0);
-    // print_list(empty);
+    // add an element to the empty list
+    insert_by_index(&empty, 1, 0);
+    print_list(empty);
 }
