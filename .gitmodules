@@ -1,0 +1,3 @@
+[submodule "hw05/pintos"]
+	path = hw05/pintos
+	url = http://cs140.stanford.edu/pintos.git

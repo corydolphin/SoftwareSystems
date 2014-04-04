@@ -13,8 +13,9 @@ int main() {
      gint my_int = 42;
      g_hash_table_insert(my_table, &my_int, my_string);
 
-     g_printf("%s", my_string); 
-     g_printf("%d bottles of beer left in the fridge", 5);
+     GString *result = g_hash_table_lookup(my_table,&my_int);
+     g_printf("%s\n", my_string->str); 
+     g_printf("The solution to life is %s", result->str);
 
      return 0;
 }
