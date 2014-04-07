@@ -69,16 +69,7 @@ gint _compare_key(gconstpointer word1,
     g_assert(val1 != NULL);
     g_assert(val2 != NULL);
    
-    if(*val1 < *val2){
-        return -1;
-    }
-    else if(*val1 > *val2){
-        return 1;
-    }
-    else{
-        return 0;
-    }
-
+    return *val1 - *val2; // After disucssing with noam, no need to return -1 or 1. Any postivie/negative value is chill
 }
 
 // Prints a GHashTable sorted by value
@@ -103,10 +94,6 @@ gchar **get_words(gchar* contents, GRegex* reg){
     return words;
 
 }
-
-
-
-
 
 int main() {
     GHashTable *my_table = g_hash_table_new(g_str_hash,g_str_equal);
