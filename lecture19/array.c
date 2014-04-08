@@ -10,7 +10,7 @@ License: Creative Commons Attribution-ShareAlike 3.0
 #include <pthread.h>
 #include "mutex.h"
 
-#define SIZE 1000
+#define SIZE 1000000
 
 typedef struct {
     int next_id;
@@ -39,8 +39,10 @@ Environment *make_environment ()
 
 int get_next_id (Environment *env)
 {
-    int id = env->next_id;
-    env->next_id++;
+    acquire(env->lock); //Dis is da kritikal sektion
+        int id = env->next_id;
+        env->next_id++;
+    release(env->lock);
     return id;
 }
 

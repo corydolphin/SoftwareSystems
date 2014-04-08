@@ -18,8 +18,37 @@ typedef struct {
 
 // Makes a new matrix and sets all elements to zero.
 Matrix *make_matrix(int rows, int cols) {
-    // Fill this in
-    return NULL;
+
+    Matrix *matrix = malloc(sizeof(Matrix));
+    if(matrix == NULL){
+        printf("Out of memory\n");
+        exit(-1);
+    }
+    matrix->rows = rows;
+    matrix->cols = cols;
+    matrix->data = (double**)malloc(sizeof(double*)*rows);
+    if(matrix->data == NULL){
+        printf("Out of memory when allocating matrix\n");
+        exit(-1);
+    }
+
+    int i, j;
+    for (i=0; i<rows; i++) {
+
+        // allocate this column as zero bytes
+        double *column = (double*)calloc(cols,sizeof(double));
+        if(column == NULL){
+            printf("Out of memory when allocating column\n");
+            exit(-1);
+        }
+        for(j=0; j < cols; j++){
+            column[j] = 0.0; // MAke sure they are zero doubles
+        }
+        matrix->data[i] = column;
+    }
+
+    return matrix;
+
 }
 
 // Prints the elements of a matrix.
@@ -81,15 +110,20 @@ Matrix *add_matrix_func(Matrix *A, Matrix *B) {
 // Performs matrix multiplication and stores the result in the given
 // destination matrix (C).
 void mult_matrix(Matrix *A, Matrix *B, Matrix *C) {
-    // Fill this in
-    // Note that it is asking for matrix multiplication, not
-    // elementwise multiplication
+    
 }
 
 // Performs matrix multiplication and returns a new matrix.
 Matrix *mult_matrix_func(Matrix *A, Matrix *B) {
     // Fill this in
-    return NULL;
+
+    Matrix *result = make_matrix(A->rows, B->cols);
+    if(result ==NULL){
+        printf("Out of memory when allocating result matrix\n");
+        exit(-1);
+    }
+    mult_matrix(A,B,result);
+    return result;
 }
 
 int main() {
