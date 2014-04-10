@@ -155,6 +155,43 @@ double *row_sum(Matrix *A) {
     return res;
 }
 
+// Adds up the cols of A and returns a heap-allocated array of doubles.
+double *col_sum(Matrix *A) {
+    double total;
+    int i, j;
+
+    double *res = malloc(A->cols * sizeof(double));
+
+
+    for (j=0; j<A->cols; j++) {
+    total = 0.0;
+    for (i=0; i<A->rows; i++) {
+        total += A->data[i][j];
+    }
+    res[j] = total;
+    }
+    return res;
+}
+
+// Adds up the two diags of A and returns a heap allocated array of 2 doubles
+double *diag_sum(Matrix *A) {
+    double* total = malloc(2*sizeof(double));
+    int i;
+
+    total[0] = 0.0;
+    total[1] = 0.0;
+
+    int max = A->cols - 1;
+    for (i=0; i<A->cols; i++) {
+        total[0] += A->data[i][i];
+        total[1] += A->data[max - i][max - i];
+    }
+
+
+    return total;
+}
+
+
 /* 
    http://en.wikipedia.org/wiki/Magic_square
 
@@ -169,6 +206,49 @@ double *row_sum(Matrix *A) {
    Feel free to use row_sum().
 */
 
+
+int is_magic_square(Matrix *mat){
+    int i;
+
+    if(mat->cols != mat->rows){
+        return 0; // must be a square
+    }
+
+    double *r_sum = row_sum(mat);
+    double *c_sum = col_sum(mat);
+    double *d_sum = diag_sum(mat);
+
+    for(i =0; i < mat->rows; i++){
+        if(r_sum[i] != c_sum[i] || 
+           r_sum[i] != d_sum[0] ||
+           c_sum[i] != d_sum[1]){
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+// Example magic square from Wiki
+// http://en.wikipedia.org/wiki/Magic_square
+Matrix *get_magic_example(){
+
+    Matrix *mat = make_matrix(3,3);
+
+    mat->data[0][0] = 2.0;
+    mat->data[0][1] = 7.0;
+    mat->data[0][2] = 6.0;
+
+    mat->data[1][0] = 9.0;
+    mat->data[1][1] = 5.0;
+    mat->data[1][2] = 1.0;
+
+    mat->data[2][0] = 4.0;
+    mat->data[2][1] = 3.0;
+    mat->data[2][2] = 8.0;
+
+    return mat;
+}
 
 int main() {
     int i;
@@ -203,5 +283,10 @@ int main() {
     }
     // should print 6, 22, 38
 
+
+    Matrix *mag = get_magic_example();
+    printf("%f\n", diag_sum(mag)[0]);
+    assert(is_magic_square(mag));
+    printf("You got yo self a magik skware\n");
     return 0;
 }
