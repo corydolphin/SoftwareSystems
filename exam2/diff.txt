@@ -1,0 +1,28 @@
+10d9
+< #include "stdlib.h" // we need malloc!
+21c20
+<     vector->data = calloc(len, sizeof(double *)); // calloc takes a (size_t num, size_t size)
+---
+>     vector->data = calloc(len * sizeof(double *));
+28d26
+<     free(vector->data); //we need to free the data before we free the struct!
+29a28
+>     free(vector->data);
+70,72c69,71
+< // Adds two vectors elementwise and returns a new vector. And the call signature was wrong
+< Vector *add_vector_func(Vector *A, Vector *B) {
+<     Vector *C = make_vector(A->len); //we need to make a new vector and return it
+---
+> // Adds two vectors elementwise and returns a new vector.
+> double *add_vector_func(Vector *A, Vector *B) {
+>     Vector *C = make_vector(A->len);
+74d72
+<     return C;
+77c75
+< int main() {
+---
+> int main {
+96c94
+<     return 0; // semicolons are hard to find
+---
+>     return 0
