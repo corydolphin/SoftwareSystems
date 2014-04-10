@@ -116,7 +116,22 @@ Matrix *mult_matrix_func(Matrix *A, Matrix *B) {
 double matrix_sum1(Matrix *A) {
     double total = 0.0;
     int i, j;
+    /*
+    Assuming that the matrix is bigger than the memory cache and that a memory 
+    cache line is big enough to hold 8 matrix elements, what cache hit rate
+    would you expect foreach version of matrix_sum? Explain your reasoning.
 
+
+    
+    Assuming that the cache line is big enough to hold 8 matrix elements, and
+    assuming that the matrix has at leaast 8 elements per row, and is not arranged
+    such that rows are sequentially allocated in memory:
+    I expect that this function will hit cache 7/8ths of the time. As this function
+    accesses a row, and then iterates through the columns in the row, request for
+    the first index in a new array will cache the next 8 element, resulting in
+    7 cache hits for one cache miss.
+
+    */
     for (i=0; i<A->rows; i++) {
 	for (j=0; j<A->cols; j++) {
 	    total += A->data[i][j];
@@ -126,6 +141,22 @@ double matrix_sum1(Matrix *A) {
 }
     
 double matrix_sum2(Matrix *A) {
+    /*
+    Assuming that the cache line is big enough to hold 8 matrix elements, and
+    assuming that the matrix has at leaast 8 elements per row, and is not arranged
+    such that rows are sequentially allocated in memory:
+
+    I expect that this function will never hit cache. Each request to a different
+    row will trigger a caching of the next 8 elements of the row, but the next
+    iteration of the function will request a new row, blowing away the cache.
+
+    If the rows are allocated sequentially, and the there are less than 8 columns,
+    the situation is quite different, as accessing an element in a row may trigger
+    the caching of elements of the next row. This is unlikely, thus this excercise
+    is left up to the reader.
+    */
+
+
     double total = 0.0;
     int i, j;
 
